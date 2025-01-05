@@ -1,3 +1,39 @@
 ---
-# we can define variable here
 ansible_ssh_user : "jagdish"
+rvm_gpg_keys:
+      - https://rvm.io/mpapis.asc
+      - https://rvm.io/pkuczynski.asc
+rvm_install_url: https://get.rvm.io
+
+debian_packages:
+      - curl
+      - g++
+      - gcc
+      - autoconf
+      - automake
+      - bison
+      - libc6-dev
+      - libffi-dev
+      - libgdbm-dev
+      - libncurses5-dev
+      - libsqlite3-dev
+      - libtool
+      - libyaml-dev
+      - make
+      - pkg-config
+      - sqlite3
+      - zlib1g-dev
+      - libgmp-dev
+      - libreadline-dev
+      - libssl-dev
+redhat_packages:
+      - git
+      - curl
+      - gcc
+      - readline-devel
+      - zlib-devel
+      - libyaml-devel
+      - sqlite-devel
+      - libffi-devel
+      - make
+      - g++
