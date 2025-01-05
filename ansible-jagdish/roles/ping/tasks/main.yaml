@@ -1,0 +1,10 @@
+---
+- name: Ping the target machine
+  ping:
+
+- name: Runing whoami cmd
+  shell : "whoami"
+  register : whoami
+
+- debug:
+   msg : "{{whoami.stdout}}"

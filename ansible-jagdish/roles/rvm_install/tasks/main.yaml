@@ -1,0 +1,50 @@
+---
+- name: Install required dependencies on Debian-based systems
+  apt:
+    name: [curl, g++, gcc,autoconf,automake, bison, libc6-dev,libffi-dev,libgdbm-dev, libncurses5-dev,libsqlite3-dev,libtool, libyaml-dev, make, pkg-config,sqlite3,zlib1g-dev,libgmp-dev,libreadline-dev,libssl-dev]
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Install required dependencies on RedHat-based systems
+  yum:
+    name:
+      - git
+      - curl
+      - gcc
+      - readline-devel
+      - zlib-devel
+      - libyaml-devel
+      - sqlite-devel
+      - libffi-devel
+      - make
+      - gcc-c++
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Install RVM (Ruby Version Manager)
+  become_user: "{{ ansible_ssh_user }}"
+  shell: |
+    \curl -sSL https://get.rvm.io | bash -s stable
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat']
+
+- name: Add RVM to the shell configuration file for the user
+  lineinfile:
+    path: "/home/{{ ansible_ssh_user }}/.bashrc"
+    line: 'source $HOME/.rvm/scripts/rvm'
+  become_user: "{{ ansible_ssh_user }}"
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat']
+
+- name: Source .bashrc to apply changes
+  shell: source /home/{{ ansible_ssh_user }}/.bashrc
+  become_user: "{{ ansible_ssh_user }}"
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat']
+
+- name: chacking which rvm 
+  ansible.builtin.shell: which rvm
+  register: which_rvm
+
+- debug:
+   msg : "{{which_rvm.stdout}}"
+  
+
+

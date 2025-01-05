@@ -1,0 +1,70 @@
+# Ignore OS generated files
+.DS_Store          # macOS
+Thumbs.db          # Windows
+desktop.ini        # Windows
+.vscode
+
+# Ignore Node.js dependencies (for JavaScript projects)
+node_modules/
+
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignore build directories (for compiled languages)
+bin/
+build/
+dist/
+
+# Ignore IDE/editor files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Ignore log files
+*.log
+
+# Ignore temporary files
+*.tmp
+*.swp
+*.swo
+
+# Ignore package manager files (like lock files) - adjust as necessary for your project
+package-lock.json
+yarn.lock
+.pnpm-debug.log
+
+# Ignore test coverage and report files
+coverage/
+*.lcov
+
+# Ignore other potential unnecessary files
+*.bak
+*.orig
+*.rej
+
+# Ignore environment files (e.g., for local development environments)
+.env
+.env.local
+.env.*.local
+
+# Ignore compiled files for other languages (e.g., Java, C++)
+*.class
+*.o
+*.out
+*.exe
+*.dll
+
+# Ignore user-specific configuration files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Ignore dependency directories from other package managers
+/.mvn/
+*.jar
+*.war
+*.ear
