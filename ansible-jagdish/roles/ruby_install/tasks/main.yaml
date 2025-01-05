@@ -1,19 +1,23 @@
 ---
 - name: Install Ruby {{ ruby_version }} using RVM
-  become_user: "{{ ansible_ssh_user }}"
-  command: rvm install {{ ruby_version }}
-  when: ansible_facts['os_family'] in ['Debian', 'RedHat']
+  shell: "bash -lc 'rvm install {{ ruby_version }}'"
+  register: ruby_installation_log
+  failed_when: ruby_installation_log.rc != 0
 
-- name: Set Ruby {{ ruby_version }} as the default Ruby version
-  become_user: "{{ ansible_ssh_user }}"
-  command: rvm use {{ ruby_version }} --default
-  when: ansible_facts['os_family'] in ['Debian', 'RedHat']
+- name: Show Ruby installation log
+  debug:
+    msg: "Ruby installation log: {{ ruby_installation_log.stdout }}"
+
+- name: Set Ruby {{ ruby_version }} as the default version
+  shell: "bash -lc 'rvm use {{ ruby_version }} --default'"
+  failed_when: ruby_installation_log.rc != 0  # Fail if setting default fails
 
 - name: Verify Ruby version
   become_user: "{{ ansible_ssh_user }}"
-  command: ruby -v
+  shell: "ruby -v"
   register: ruby_version
+  failed_when: ruby_version.rc != 0  # Fail if Ruby version command fails
 
-- name: Show Ruby version
+- name: Show Ruby version installed
   debug:
     msg: "Ruby version installed: {{ ruby_version.stdout }}"

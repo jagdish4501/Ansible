@@ -1,8 +1,4 @@
 ---
-- name: Install required dependencies 
-  package:
-    name: "{{ debian_packages if ansible_facts['os_family'] == 'Debian' else redhat_packages }}"
-    state: present
 
 - name: Check if RVM is already installed
   shell: "bash -lc 'rvm --version'"
@@ -15,17 +11,19 @@
     msg: "RVM is already installed: {{ rvm_check.stdout }}"
 
 - block :
-  - name: Install RVM GPG keys
+  - name: Install RVM GPG keys (RHEL/CentOS)
     shell: "curl -sSL {{ item }} | gpg2 --import -"
     loop: "{{ rvm_gpg_keys }}"
     register: gpg_import_results
     changed_when: false
     failed_when: "'error' in gpg_import_results.stdout"
-  - name: Import RVM GPG keys
+    when: ansible_facts['os_family'] == 'RedHat'
+  - name: Import RVM GPG keys (Ubuntu/Debian)
     shell: "gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB"
     register: gpg_key_import
     changed_when: "'imported' in gpg_key_import.stdout"
-    failed_when: gpg_key_import.rc != 0
+    failed_when: gpg_key_import.rc != 0 
+    when : ansible_facts['os_family'] == 'Debian'
   - name: Debug GPG key import result
     debug:
       msg: "GPG keys imported successfully: {{ gpg_key_import.stdout }}"
