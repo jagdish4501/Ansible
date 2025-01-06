@@ -1,6 +1,0 @@
----
-- name: Check if hosts are reachable
-  hosts: all
-  gather_facts: no 
-  roles :
-    - ping

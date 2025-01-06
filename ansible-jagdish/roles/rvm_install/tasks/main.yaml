@@ -1,15 +1,12 @@
 ---
-
 - name: Check if RVM is already installed
   shell: "bash -lc 'rvm --version'"
   register: rvm_check
   changed_when: false
   failed_when: false
-
 - name: Debug RVM check result
   debug:
     msg: "RVM is already installed: {{ rvm_check.stdout }}"
-
 - block :
   - name: Install RVM GPG keys (RHEL/CentOS)
     shell: "curl -sSL {{ item }} | gpg2 --import -"

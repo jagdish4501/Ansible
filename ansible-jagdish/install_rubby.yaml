@@ -1,7 +1,0 @@
----
-- name: Install Ruby 2.7.3 using RVM
-  hosts: all
-  become: yes
-  roles:
-    - rvm_install
-    - ruby_install

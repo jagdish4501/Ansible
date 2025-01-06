@@ -1,0 +1,22 @@
+---
+- block:
+  - name: checking if NVM is available
+    shell: "bash -c 'source ~/.nvm/nvm.sh && nvm --version'"
+    register: nvm_check
+    changed_when: false
+    failed_when: false
+  - name: Installing nvm (Node Version Manager)
+    shell: "curl -o- {{ nvm_install_url }} | bash"
+    changed_when: false
+    when: nvm_check.rc != 0
+  - name: checking nvm version
+    shell: "bash -c 'source ~/.nvm/nvm.sh && nvm --version'"
+    register: nvm_version
+    changed_when: false
+    failed_when: false
+  - name : nvm --version output 
+    debug:
+      msg: "nvm version : {{nvm_version.stdout}}"
+  become_user: "{{ ansible_ssh_user }}"
+
+

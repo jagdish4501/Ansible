@@ -5,6 +5,8 @@
 - name: Runing whoami cmd
   shell : "whoami"
   register : whoami
+  changed_when: false
+  failed_when: false
 
 - debug:
    msg : "{{whoami.stdout}}"
