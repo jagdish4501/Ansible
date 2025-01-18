@@ -1,0 +1,7 @@
+---
+- name: Running playbook to configure worker-server
+  hosts: worker_server
+  become: yes
+  # include role required for worker_server
+  roles:
+    - ping

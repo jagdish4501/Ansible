@@ -1,0 +1,10 @@
+---
+source_home: "/home/jagdish/"
+destination_home: "/home/{{project_user}}/"
+file_items:
+  - src: "{{source_home}}/lms-deploy/scripts/CheckAppStatus.sh"
+    dest: "{{destination_home}}"
+file_owner: "{{project_user}}"
+file_group: "{{project_user}}"
+file_mode: "0744"
+

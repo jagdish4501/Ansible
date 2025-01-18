@@ -1,0 +1,7 @@
+---
+- name: Running  playbook to configure api-server
+  hosts: all
+  become: yes
+  # include role required for api_server
+  roles:
+    - ruby_install

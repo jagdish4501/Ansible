@@ -1,6 +1,0 @@
----
-ansible_ssh_user : "ubuntu"
-rvm_gpg_keys:
-      - https://rvm.io/mpapis.asc
-      - https://rvm.io/pkuczynski.asc
-rvm_install_url: https://get.rvm.io

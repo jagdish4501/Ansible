@@ -1,0 +1,22 @@
+---
+- name: Install Ruby {{ ruby_version }} using RVM
+  shell: "bash -lc 'rvm install {{ ruby_version }}'"
+  register: ruby_installation_log
+  failed_when: ruby_installation_log.rc != 0
+
+- name: Set Ruby {{ ruby_version }} as the default version
+  shell: "bash -lc 'rvm use {{ ruby_version }} --default'"
+  failed_when: ruby_installation_log.rc != 0 
+
+- name: Verify Ruby version
+  shell: "bash -lc 'ruby -v'"
+  register: ruby_version
+  failed_when: ruby_version.rc != 0 
+
+- name: Show Ruby version installed
+  debug:
+    msg: "Ruby version installed: {{ ruby_version.stdout }}"
+
+- name: Show Ruby installation log
+  debug:
+    msg: "Ruby installation log: {{ ruby_installation_log.stdout }}"

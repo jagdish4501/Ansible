@@ -1,0 +1,7 @@
+---
+- name: Running playbook to configure web-server
+  hosts: web_server
+  become: yes
+  # include role required for web_server
+  roles:
+    - ping

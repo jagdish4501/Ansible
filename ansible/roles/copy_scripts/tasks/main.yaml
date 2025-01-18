@@ -1,0 +1,24 @@
+---
+- name: Copy the file or directory to target host (will replace if it exists)
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner | default(file_owner) }}"
+    group: "{{ item.group | default(file_group) }}"
+    mode: "{{ item.mode | default(file_mode) }}"
+    force: yes  # Overwrite existing files
+  loop: "{{ file_items }}"
+  register: copy_result
+  when: item.src is defined and item.dest is defined
+
+- name: Print status message for file copy result
+  debug:
+    msg: >
+      {% if copy_result is success %}
+        File copy for {{ item.src }} to {{ item.dest }} was successful.
+      {% else %}
+        File copy for {{ item.src }} to {{ item.dest }} failed.
+      {% endif %}
+  loop: "{{ file_items }}"
+  when: item.src is defined and item.dest is defined
+  register: copy_result

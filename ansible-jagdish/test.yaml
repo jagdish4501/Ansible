@@ -1,6 +1,0 @@
----
-- name: Running testing playbook
-  hosts: all
-  become: yes
-  roles:
-    - node_install
