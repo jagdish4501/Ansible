@@ -1,0 +1,8 @@
+- name: Running playbook
+  hosts: wsl
+  become: true
+  roles:
+    - del_users
+  vars:
+    users_to_delete:
+      - anuj_yabx

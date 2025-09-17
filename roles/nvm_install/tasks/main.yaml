@@ -1,0 +1,18 @@
+---
+ - block:
+   - name: checking if NVM is available
+     shell: |
+      source  $HOME/.nvm/nvm.sh
+      nvm --version
+     args:
+        executable: /bin/bash
+     register: nvm_check
+     changed_when: false
+     failed_when: false
+ 
+   - name: Installing nvm (Node Version Manager)
+     shell: curl -o- {{ nvm_install_url }} | bash
+     changed_when: false
+     when: nvm_check.rc != 0
+ 
+   become_user: "{{user}}"

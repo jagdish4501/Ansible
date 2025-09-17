@@ -1,0 +1,28 @@
+---
+- name: Setting up rvm
+  block:
+    - name: Check if RVM is already installed
+      stat:
+        path: "$HOME/.rvm/scripts/rvm"
+      register: rvm_installed
+
+    - name: Install RVM if not present
+      shell: curl -sSL {{ rvm_install_url }} | bash
+      when: not rvm_installed.stat.exists
+
+    - name: Ensure RVM is sourced in .bashrc
+      lineinfile:
+        path: "/home/{{ user }}/.bashrc"
+        line: 'source "$HOME/.rvm/scripts/rvm"'
+        state: present
+      
+    - name: Show installed RVM version
+      shell: bash -lc 'rvm --version'
+      register: rvm_status
+      changed_when: false
+    - name: Debug RVM version
+      debug:
+        msg: "{{ rvm_status.stdout_lines }}"
+        
+  become_user: "{{ user }}"
+  become: yes

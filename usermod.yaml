@@ -1,0 +1,9 @@
+- name: Running playbook
+  hosts: wsl
+  become: true
+  roles:
+    - usermod
+  vars:
+    user_to_add_group:
+      - name: jagdish_yabx
+        groups: [temp,temp2]

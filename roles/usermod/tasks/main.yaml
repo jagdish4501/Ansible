@@ -1,0 +1,8 @@
+---
+- name: Add users to specified groups
+  user:
+    name: "{{ item.0.name }}"
+    groups: "{{ item.1 }}"
+    append: yes
+    state: present
+  loop: "{{ user_to_add_group | subelements('groups') }}"

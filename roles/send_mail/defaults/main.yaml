@@ -1,0 +1,5 @@
+---
+email_subject: "test subject"
+email_body: "Test body"
+mail_receiver: 
+      - jagdish.kumar@yabx.co

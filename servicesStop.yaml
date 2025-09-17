@@ -1,0 +1,13 @@
+---
+- name: Running playbook
+  hosts: test
+  become: true
+  roles:
+    - services_stop
+  vars:
+    yabx_services:
+      wsl1:
+        - postgresql.service
+        - mongod.service
+      wsl2:
+        - nginx

@@ -1,0 +1,11 @@
+---
+- name: Running playbook
+  hosts: wsl
+  become: true
+  roles:
+    - lms_deploy
+  vars:
+    envirnoment_var_sh: /home/yabx/scripts/environment_var.sh
+    envirnoment_var: /home/yabx/scripts/environment_var
+    deployment_dir: /home/yabx
+    git_branch:  single_code_base_dev

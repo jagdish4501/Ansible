@@ -1,0 +1,22 @@
+---
+- name: Running playbook to setup rvm ruby nvm node
+  hosts: server
+  become: true
+  roles:
+    - rvm_install
+    - rvm_requirments
+    - ruby_install
+    - nvm_install
+    - node_install
+    - yarn_install
+    - pg_devel_install
+
+  vars:
+    user: "yabx"
+    rvm_install_url: https://get.rvm.io
+    ruby_version: "2.7.3"
+    nvm_install_url : "https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh"
+    node_version : 12.14.1
+    
+
+

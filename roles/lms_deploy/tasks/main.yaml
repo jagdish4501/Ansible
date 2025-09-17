@@ -1,0 +1,106 @@
+---
+- name: Configure Git user
+  ansible.builtin.git_config:
+    name: user.name
+    value: "{{ git_user }}"
+
+- name: Configure Git password
+  ansible.builtin.git_config:
+    name: user.password
+    value: "{{ git_password }}"
+
+- name: Ensure Git credential helper is set to store
+  ansible.builtin.git_config:
+    name: credential.helper
+    value: store
+
+- name: Check if the lms exists
+  shell: "bash -lc 'ls {{ deployment_dir }} | grep lms'"
+  register: lms_check
+  failed_when: false
+
+- name: cloning lms for deployment
+  ansible.builtin.shell: |
+    cd "{{deployment_dir}}"
+    git clone https://{{ git_user }}:{{ git_token }}@github.com/yabx-tech/lms.git
+  when: lms_check.rc!=0
+  become_user: "{{project_user}}"
+
+
+- block:
+
+    - name: Checkout and pull latest code from GitHub
+      ansible.builtin.shell: |
+        cd {{ deployment_dir }}/lms
+        git checkout {{ git_branch }}
+        git pull https://{{ git_user }}:{{ git_token }}@github.com/yabx-tech/lms.git {{ git_branch }}
+      args:
+          executable: /bin/bash
+
+
+    - name: Uninstall specific Ruby gems
+      ansible.builtin.shell: |
+        cd {{ deployment_dir }}/lms
+        gem uninstall ussd customers partners products accounting core auth mno communication
+      args:
+          executable: /bin/bash
+
+
+    - name: Install project dependencies with Bundler
+      ansible.builtin.shell: |
+        cd {{ deployment_dir }}/lms
+        git pull https://{{ git_user }}:{{ git_token }}@github.com/yabx-tech/lms.git {{ git_branch }}
+        bundle config set without 'development test'
+        bundle install
+      args:
+          executable: /bin/bash
+
+
+    - name: Clear precompiled Rails assets
+      ansible.builtin.shell: |
+        cd {{ deployment_dir }}/lms
+        source {{ envirnoment_var_sh }}
+        bundle exec rails assets:clobber
+      args:
+          executable: /bin/bash
+
+
+    - name: Clear temporary Rails files
+      ansible.builtin.shell: |
+        cd {{ deployment_dir }}/lms
+        source {{ envirnoment_var_sh }}
+        bundle exec rails tmp:clear
+      args:
+          executable: /bin/bash
+
+
+    - name: Install node package dependencies using Yarn
+      ansible.builtin.shell: |
+        cd {{ deployment_dir }}/lms
+        yarn install --check-files --force --production
+      args:
+          executable: /bin/bash
+
+
+    - name: Precompile Rails assets in production
+      ansible.builtin.shell: |
+        cd {{ deployment_dir }}/lms
+        source {{ envirnoment_var_sh }}
+        RAILS_ENV=production bundle exec rails assets:precompile --trace
+      args:
+          executable: /bin/bash
+
+    - name: Run database migrations for production
+      ansible.builtin.shell: |
+        cd {{ deployment_dir }}/lms
+        source {{ envirnoment_var_sh }}
+        bundle exec rails db:migrate RAILS_ENV=production
+      args:
+          executable: /bin/bash
+
+  become_user: "{{ project_user }}"
+  become_flags: "-i"
+
+
+
+

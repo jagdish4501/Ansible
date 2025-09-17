@@ -1,9 +1,0 @@
-# List of users to be created
-users:
-  - name: "yabx"
-    password: "ggu^7uh89b"
-    groups:
-      - "sudo"
-    public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABADWvB/bQoMnF0eFratk9WX6zzTY/6M5ujN68ywcu+/4WB82j/aNvtIGptjaNMU9hnRGc1wyHhy8Gjsnyaaaghs+uBaECmlbmeXQI0kcFvWcBYF10WdHOXktR+I7wu2k9NAgAbGFNxuapKpa8gvAdDWyTz7++iHjSfVYBt1+xA1Qev0Vs9hjXq5lWK8AYQ18lrEYb/FYu2DqzGJn4GsedSl7ys7SHS8KIcVIuNZmGwUg4WAAabEHsOhggvHiP1wDo1JR7+0ZBjoWieuRIyYvBAUBhiqAJzC+AK7ep1AHcUTTTf5oSoHm8imdSJb9Gt2UnRaDqsiGkH+5TRQ2MUpFAUIM= jagdish.kumar@yabx.co"
-
-default_passwd: "xyz##$$1356vhgfrtgctfgfenytgugh8967gvvhvFhfb"

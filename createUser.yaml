@@ -1,0 +1,13 @@
+---
+- name: Running playbook
+  hosts: server
+  become: true
+  vars:
+    users:
+      - username: "yabx"
+        password: "Yabx@1234"
+        public_key: ""
+        email:
+          - "jagdish.kumar@yabx.co"
+  roles:
+    - create_users

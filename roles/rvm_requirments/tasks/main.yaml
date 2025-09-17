@@ -1,0 +1,61 @@
+---
+
+- name: Install RVM dependencies on RedHat-based systems
+  ansible.builtin.yum:
+    name:
+      - patch
+      - autoconf
+      - automake
+      - bison
+      - gcc-c++
+      - libffi-devel
+      - libtool
+      - make
+      - readline-devel
+      - ruby
+      - sqlite-devel
+      - zlib-devel
+      - glibc-headers
+      - glibc-devel
+      - openssl-devel
+      - curl
+      - git
+      - tar
+      - which
+    state: present
+  vars:
+    ansible_python_interpreter: /usr/libexec/platform-python
+  when: ansible_os_family == "RedHat"
+
+
+- name: Install RVM dependencies on Debian-based systems (Ubuntu)
+  ansible.builtin.apt:
+    name:
+      - patch
+      - autoconf
+      - automake
+      - bison
+      - g++
+      - libffi-dev
+      - libtool
+      - make
+      - libreadline-dev
+      - libsqlite3-dev
+      - zlib1g-dev
+      - libc6-dev
+      - libssl-dev
+      - curl
+      - git
+      - tar
+      - build-essential
+      - libgdbm-dev
+      - libncurses5-dev
+      - libyaml-dev
+      - libxml2-dev
+      - libxslt1-dev
+      - libgmp-dev
+      - libreadline-dev
+      - libdb-dev
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"

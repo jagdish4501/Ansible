@@ -1,0 +1,17 @@
+---
+- name: Creating groups
+  group:
+    name: "{{ item.name }}"
+    state: present
+  loop: "{{ sudo_groups }}"
+
+- name: Creating sudoers files for each group
+  copy:
+    dest: "/etc/sudoers.d/{{ item.name }}"
+    content: |
+      %{{ item.name }} ALL=(ALL) NOPASSWD: {{ item.commands | join(', ') }}
+    owner: root
+    group: root
+    mode: '0440'
+    validate: 'visudo -cf %s'
+  loop: "{{ sudo_groups }}"

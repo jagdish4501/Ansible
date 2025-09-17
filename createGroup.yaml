@@ -1,0 +1,16 @@
+---
+- name: Running playbook
+  hosts: wsl
+  become: true
+  roles:
+    - create_groups
+  vars:
+    sudo_groups:
+      - name: temp
+        commands:
+          - /usr/bin/systemctl status *
+          - /usr/bin/su - yabx
+
+      - name: temp2
+        commands:
+          - /usr/bin/docker *

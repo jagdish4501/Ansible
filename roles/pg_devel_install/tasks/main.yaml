@@ -1,0 +1,19 @@
+---
+
+- name: Install postgresql-devel  dependencies on RedHat-based systems
+  ansible.builtin.yum:
+    name:
+      - patch
+    state: postgresql-devel
+  vars:
+    ansible_python_interpreter: /usr/libexec/platform-python
+  when: ansible_os_family == "RedHat"
+
+
+- name: Install postgresql dependencies on Debian-based systems (Ubuntu)
+  ansible.builtin.apt:
+    name:
+      - libpq-dev
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"

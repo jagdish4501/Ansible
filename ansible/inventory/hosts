@@ -1,9 +1,0 @@
-[all:vars]
-ansible_user="ubuntu"
-
-[api_server]
-master
-[web_server]
-node-1
-[worker_server]
-node-2

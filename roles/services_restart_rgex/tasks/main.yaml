@@ -1,0 +1,77 @@
+---
+- name: Find all yabx services
+  ansible.builtin.find:
+    paths: "/etc/systemd/system"
+    patterns: "{{ patterns }}"
+  register: found_yabx_services
+
+
+- name: Extract service file names
+  set_fact:
+    yabx_services: "{{ found_yabx_services.files | map(attribute='path') | map('basename') | list }}"
+
+- name: Log found service files
+  ansible.builtin.debug:
+    msg: "Found YABX service files: {{ yabx_services }}"
+
+- name: Check the status of each service
+  ansible.builtin.shell: "systemctl is-active {{ item }}"
+  loop: "{{ yabx_services }}"
+  register: service_status_results
+  ignore_errors: yes
+  changed_when: false
+
+- name: Extract active services
+  set_fact:
+    running_yabx_services: "{{ service_status_results.results | selectattr('rc', '==', 0) | map(attribute='item') | list }}"
+
+- name: Log active services
+  ansible.builtin.debug:
+    msg: "Active YABX services to restart: {{ running_yabx_services }}"
+
+- name: Restarting active YABX services
+  ansible.builtin.shell: "systemctl restart {{ item }}"
+  loop: "{{ running_yabx_services }}"
+  when: running_yabx_services | length > 0
+  register: restart_results
+  ignore_errors: yes
+  changed_when: false
+
+- name: Extracting failed services during restart
+  set_fact:
+    failed_yabx_services: "{{ restart_results.results | selectattr('rc', '!=', 0) | list }}"      
+
+- name: Store failed services' error output
+  set_fact:
+    failed_service_errors: "{{ failed_yabx_services | map(attribute='stdout_lines') | list }}"
+
+- name: Trigger email notification if any service restart failed
+  include_role:
+    name: send_mail
+  vars:
+    email_subject: "ALERT: {{ inventory_hostname }} - YABX Service Restart Failure"
+    email_body: |
+      The following YABX services failed to restart:
+
+      {% for item in failed_yabx_services %}
+      Service: {{ item.item }}
+      Output:
+      {{ item.stdout }}
+      {% endfor %}
+  when: failed_yabx_services | length > 0
+
+- name: Halt execution if any service failed to restart
+  ansible.builtin.fail:
+    msg: "Service restart failed on {{ inventory_hostname }}. Stopping execution."
+  failed_when: failed_yabx_services | length > 0
+
+
+- name: Log the result of systemctl commands
+  ansible.builtin.debug:
+    msg: "Systemd restart return codes: {{ restart_results.stdout_lines }}"
+  when: restart_results.stdout_lines is defined
+
+- name: "Pause for {{ pause_time }} before moving to the next host"
+  pause:
+    seconds: "{{ pause_time }}"
+  when: pause_time is defined

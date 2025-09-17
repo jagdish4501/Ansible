@@ -1,0 +1,15 @@
+---
+- name: Send email notification
+  community.general.mail:
+    host: smtp.gmail.com
+    port: "{{ smtp_port }}"
+    username: "{{mail_username}}"
+    password: "{{ password }}"
+    to: "{{mail_receiver }}"
+    from: "alerts@yabx.co"
+    subject: "{{ email_subject }}"
+    body: "{{email_body }}"
+    secure: starttls
+  delegate_to: localhost
+  ignore_errors: yes
+

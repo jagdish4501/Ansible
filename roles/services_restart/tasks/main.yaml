@@ -1,0 +1,24 @@
+---
+- name: Restarting YABX services
+  ansible.builtin.shell: "systemctl restart {{ item }}"
+  loop: "{{ yabx_services[inventory_hostname] }}"
+  when: yabx_services[inventory_hostname] | length > 0
+  register: restart_results
+  ignore_errors: yes
+  changed_when: false
+  failed_when: false
+
+- name: Set fact for running services
+  set_fact:
+    running_services: "{{ restart_results.results | selectattr('rc','==',0) | map(attribute='item') | list }}"
+
+- name: Set fact for failed services
+  set_fact:
+    failed_services: "{{ restart_results.results | selectattr('rc','!=',0) | map(attribute='item') | list }}"
+
+- name: Debug Running and failed Services 
+  ansible.builtin.debug:
+    msg:
+      - "Rstarted Services: {{ running_services }}"
+      - "failed Services: {{ failed_services }}"
+ 

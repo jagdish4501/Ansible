@@ -1,0 +1,58 @@
+---
+- name: Setting up ruby
+  block:
+    - name: Check if the openssl exists
+      shell: |
+        source "$HOME/.rvm/scripts/rvm"
+        ls $rvm_path | grep usr && ls $rvm_path/usr/bin | grep openssl
+      args:
+        executable: /bin/bash
+      register: openssl_check
+      failed_when: false
+      changed_when: false
+
+    - name : Install openssl copatible version for make
+      shell: |
+        source "$HOME/.rvm/scripts/rvm"
+        rvm pkg install openssl
+      args:
+        executable: /bin/bash
+      when: openssl_check.rc!=0
+      
+
+    - name: Install Ruby {{ ruby_version }} using RVM
+      shell: |
+        source "$HOME/.rvm/scripts/rvm"
+        rvm install {{ ruby_version }} --with-openssl-dir=/$rvm_path/usr/
+      args:
+        executable: /bin/bash
+      register: ruby_installation_log
+      ignore_errors: true
+
+    - name: Show Ruby installation log
+      debug:
+        msg: "Ruby installation log: {{ ruby_installation_log.stderr_lines }}"
+      failed_when: ruby_installation_log.rc != 0
+      when: ruby_installation_log.rc == 0
+
+    - name: Set Ruby {{ ruby_version }} as the default version
+      shell: bash -lc 'rvm use {{ ruby_version }} --default'
+
+    - name: Verify Ruby version
+      shell: | 
+        source "$HOME/.rvm/scripts/rvm"
+        ruby -v
+      args:
+        executable: /bin/bash
+      register: ruby_version
+      
+
+    - name: Show Ruby version installed
+      debug:
+        msg: "Ruby version installed: {{ ruby_version.stdout }}"
+
+  become_user: "{{user}}" 
+
+
+
+

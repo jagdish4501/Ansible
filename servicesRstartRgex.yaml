@@ -1,0 +1,9 @@
+---
+- name: Running playbook
+  hosts: wsl
+  become: true
+  roles:
+    - services_restart_rgex
+  vars:
+    patterns : "yabx-*.service"
+    pause_time: 5

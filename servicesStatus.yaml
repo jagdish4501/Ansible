@@ -1,0 +1,29 @@
+---
+- name: Running playbook
+  hosts: web-server api-servers worker-servers 
+  become: true
+  roles:
+    - services_status
+  vars:
+    yabx_services:
+      web-server:
+        - yabx-worker.service
+        - yabx-web.service
+      api1-server:
+        - yabx-worker.service
+        - yabx-web.service
+      api2-server:
+        - yabx-worker.service
+        - yabx-web.service
+      api3-server:
+        - yabx-worker.service
+        - yabx-web.service
+      api4-server:
+        - yabx-worker.service
+        - yabx-web.service
+      worker1-server:
+        - yabx-worker.service
+        - yabx-web.service
+      worker2-server:
+        - yabx-worker.service
+        - yabx-web.service

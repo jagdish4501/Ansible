@@ -1,0 +1,53 @@
+- name: Find all YABX service files
+  ansible.builtin.find:
+    paths: "/etc/systemd/system"
+    patterns: "{{patterns }}"
+  register: found_yabx_service
+
+- name: Extract service names from found files
+  set_fact:
+    yabx_services: "{{ found_yabx_service.files | map(attribute='path') | map('basename') | list }}"
+
+- name: Log the list of YABX services found
+  ansible.builtin.debug:
+    msg: "Found YABX services: {{ yabx_services }}"
+
+- name: Check the status of each YABX service
+  ansible.builtin.shell: "systemctl status {{ item }}"
+  loop: "{{ yabx_services }}"
+  when: yabx_services | length > 0
+  register: systemctl_status_results
+  ignore_errors: true
+  changed_when: false
+
+- name: Extract failed services from systemctl status check
+  set_fact:
+    failed_yabx_services: "{{ systemctl_status_results.results | selectattr('rc', '!=', 0) | list }}"
+
+- name: Capture stdout_lines for failed YABX services
+  set_fact:
+    failed_service_output: "{{ failed_yabx_services | map(attribute='stdout_lines') | list }}"
+
+- name: Trigger email notification if any service failed
+  include_role:
+    name: send_mail
+  vars:
+    email_subject: "ALERT: {{ inventory_hostname }} - YABX Service Failure Detected"
+    email_body: |
+      The following YABX services failed:
+
+      {% for item in failed_yabx_services %}
+      Service: {{ item.item }}
+      Output:
+      {{ item.stdout }}
+      {% endfor %}
+  when: failed_yabx_services | length > 0
+
+- name: Log the error output of failed services
+  ansible.builtin.debug:
+    msg: "Failed service output: {{ failed_service_output }}"
+
+- name: "Pause for {{ pause_time }} before moving to the next host"
+  pause:
+    seconds: "{{ pause_time }}"
+  when: pause_time is defined

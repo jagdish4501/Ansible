@@ -1,0 +1,26 @@
+- name: Delete specified users
+  ansible.builtin.shell: "userdel -r {{ item }}"
+  loop: "{{ users_to_delete }}"
+  register: user_del_stat
+  ignore_errors: true
+  when: item != 'root'
+
+- name: Extract successfully deleted users
+  set_fact:
+    successfully_deleted_users: >-
+      {{ user_del_stat.results | selectattr('rc', 'equalto', 0) | list }}
+
+
+- name: Send mail alert for successfully deleted users
+  include_role:
+    name: send_mail
+  vars:
+    email_subject: "User Deletion: from {{ inventory_hostname }} - {{ successfully_deleted_users | length }} user(s) deleted"
+    email_body: |
+      The following users were successfully deleted from {{ inventory_hostname }}:
+
+      {% for result in successfully_deleted_users %}
+      - User: {{ result.item }}
+      {% endfor %}
+  when: successfully_deleted_users | length > 0
+

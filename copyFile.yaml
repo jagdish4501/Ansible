@@ -1,0 +1,14 @@
+- name: Running playbook
+  hosts: wsl
+  become: true
+  roles:
+    - copy_scripts
+  vars:
+    source_path: "/home/jagdish"
+    destination_path: "/home/{{ project_user}}"
+    file_items:
+      - src: "{{ source_path }}/lms-deploy/scripts/"
+        dest: "{{ destination_path }}/scripts"
+        owner: "{{  project_user  }}"
+        group: "{{  project_user  }}"
+        mode: "0744"

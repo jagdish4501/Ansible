@@ -1,0 +1,53 @@
+---
+#- name: Load role-specific variables
+# include_vars: ../../group_vars/create_users.yaml
+
+- name: Ensure users are created with groups
+  ansible.builtin.user:
+    name: "{{ item.username }}"
+    groups: "{{ item.groups | default(omit) }}"
+    password: "{{ item.password | password_hash('sha512') }}"
+    shell: /bin/bash
+    state: present
+    create_home: true
+    append: yes
+  loop: "{{ users }}"
+  when: item.username is defined and item.password is defined
+
+- name: Ensure .ssh directory exists
+  ansible.builtin.file:
+    path: "/home/{{ item.username }}/.ssh"
+    state: directory
+    mode: "0700"
+    owner: "{{ item.username }}"
+    group: "{{ item.username }}"
+  loop: "{{ users }}"
+  when: item.public_key is defined
+
+- name: Add SSH keys to authorized_keys
+  ansible.builtin.authorized_key:
+    user: "{{ item.username }}"
+    state: present
+    key: "{{ item.public_key }}"
+  loop: "{{ users }}"
+  when: item.public_key is defined
+
+- name: Send mail alert for successfully created users
+  include_role:
+    name: send_mail
+  vars:
+    email_subject: "User creation: Hi, your user is created on {{ inventory_hostname }}"
+    mail_receiver: "{{ item.email }}"
+    email_body: |
+      Hello {{ item.email}},
+
+      Your user account has been created on
+
+      host: {{ inventory_hostname }}
+      Username: {{ item.username }}
+      Password: {{ item.password }}
+
+      Regards,
+      DevOps Team
+  loop: "{{ users }}"
+  when: item.email is defined

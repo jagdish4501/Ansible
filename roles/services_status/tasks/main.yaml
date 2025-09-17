@@ -1,0 +1,24 @@
+---
+- name: checking status of  YABX services
+  ansible.builtin.shell: "systemctl is-active {{ item }}"
+  loop: "{{ yabx_services[inventory_hostname] }}"
+  when: yabx_services[inventory_hostname] | length > 0
+  register: restart_results
+  ignore_errors: yes
+  changed_when: false
+  failed_when: false
+
+- name: Set fact for running services
+  set_fact:
+    running_services: "{{ restart_results.results | selectattr('stdout', 'equalto', 'active') | map(attribute='item') | list }}"
+
+- name: Set fact for stopped services
+  set_fact:
+    stopped_services: "{{ restart_results.results | rejectattr('stdout', 'equalto', 'active') | map(attribute='item') | list }}"
+
+- name: Debug Running and Stopped Services 
+  ansible.builtin.debug:
+    msg:
+      - "Running Services: {{ running_services }}"
+      - "Stopped Services: {{ stopped_services }}"
+ 

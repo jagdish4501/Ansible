@@ -1,0 +1,8 @@
+---
+- name: Running playbook
+  hosts: wsl
+  become: true
+  roles:
+    - services_status_rgex
+  vars:
+    patterns : "yabx-*.service"
