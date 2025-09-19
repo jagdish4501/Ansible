@@ -14,7 +14,7 @@
     - name : Install openssl copatible version for make
       shell: |
         source "$HOME/.rvm/scripts/rvm"
-        rvm pkg install openssl
+        rvm pkg install openssl --with-pic
       args:
         executable: /bin/bash
       when: openssl_check.rc!=0

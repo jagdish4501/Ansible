@@ -3,6 +3,7 @@
 Thumbs.db          # Windows
 desktop.ini        # Windows
 .vscode
+inventory
 
 # Ignore Node.js dependencies (for JavaScript projects)
 node_modules/

@@ -1,13 +1,22 @@
 ---
-- name: Install required dependencies (curl, build-essential)
+- name: Install required dependencies (curl, build-essential) in redhat
   ansible.builtin.yum:
     name:
       - curl
     state: present
+  when: ansible_os_family == "RedHat"
 
+- name: Install required dependencies (curl, build-essential) in ubunut
+  ansible.builtin.apt:
+    name:
+      - curl
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+  
 - block :
   - name: Ensure NVM is available
-    ansible.builtin.command: "bash -c 'source ~/.nvm/nvm.sh && nvm --version'"
+    ansible.builtin.command: "bash -c 'source $HOME/.nvm/nvm.sh && nvm --version'"
     register: nvm_check
     changed_when: false
     failed_when: nvm_check.rc != 0
@@ -19,6 +28,13 @@
   - name: "Set the default Node.js version {{ node_version }}"
     ansible.builtin.command: "bash -c 'source $HOME/.nvm/nvm.sh && nvm alias default {{node_version}}'"
     when: nvm_check.rc == 0
+  - name: "checking node js version"
+    ansible.builtin.shell: "bash -c 'source $HOME/.nvm/nvm.sh && node -v'"
+    register: node_version
+  - name: show node version installed
+    debug:
+      msg: "{{node_version.stdout}}"
+
   become_user: "{{ user }}"
 
 

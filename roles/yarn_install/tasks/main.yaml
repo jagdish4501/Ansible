@@ -1,16 +1,28 @@
 ---
 - name: checking if npm installed 
   shell: "bash -lc 'source $HOME/.nvm/nvm.sh && npm --version'"
+  become_user: "{{user}}"
   register: npm_check
   failed_when: false
 
-- name: checking installing yarn
+- name: installing yarn
   shell: "bash -lc 'source $HOME/.nvm/nvm.sh && npm install --global yarn'"
-  become_user: "{{ nvm_user }}"
+  become_user: "{{user}}"
   failed_when: false
+  when: npm_check.rc==0
+
+- name: checking yarn version
+  shell: "bash -lc 'source $HOME/.nvm/nvm.sh && yarn -v'"
+  become_user: "{{user}}"
+  register: yarn_version
   when: npm_check.rc==0
 
 - name : debug message
   ansible.builtin.debug:
-    msg: first install node to install yarn
+    msg: first install node to install yarn 
   when: npm_check.rc!=0
+
+- name : yarn  version
+  ansible.builtin.debug:
+    msg: "yarn -version: {{yarn_version.stdout}}"
+  when: yarn_version.rc==0

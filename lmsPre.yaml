@@ -1,5 +1,5 @@
 ---
-- name: Running playbook to setup rvm ruby nvm node
+- name: Running playbook to configuring the server for lms
   hosts: server
   become: true
   roles:
@@ -13,10 +13,9 @@
 
   vars:
     user: "yabx"
-    rvm_install_url: https://get.rvm.io
-    ruby_version: "2.7.3"
-    nvm_install_url : "https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh"
-    node_version : 12.14.1
+    ruby_version: "3.3.5"
+    node_version: 16
+    # node_version : 12.14.1
     
 
 

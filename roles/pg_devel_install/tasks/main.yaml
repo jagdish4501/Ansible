@@ -3,10 +3,8 @@
 - name: Install postgresql-devel  dependencies on RedHat-based systems
   ansible.builtin.yum:
     name:
-      - patch
-    state: postgresql-devel
-  vars:
-    ansible_python_interpreter: /usr/libexec/platform-python
+      - postgresql-devel
+    state: present
   when: ansible_os_family == "RedHat"
 
 
